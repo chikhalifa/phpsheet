@@ -13,7 +13,8 @@ class Home extends CI_Controller {
     public function __construct() {
 		parent::__construct();
 		// Load Model
-		$this->load->model('User_model', 'user');
+		$this->load->helper('url', 'form');
+		$this->load->model('User_model');
 		$this->ip_address    = $_SERVER['REMOTE_ADDR'];
 		$this->datetime 	    = date("Y-m-d H:i:s");
 	}
@@ -23,16 +24,28 @@ class Home extends CI_Controller {
 		$this->load->view('index');
 	}
     public function import() {
+	
 		$path 		= 'uploads/imports/';
 		$json 		= [];
-		$this->upload_config($path);
-		if (!$this->upload->do_upload('file')) {
+		// $this->upload_config($path);
+		$config['upload_path'] 		= './'.$path;		
+		$config['allowed_types'] 	= 'csv|CSV|xlsx|XLSX|xls|XLS';
+		$config['max_filename']	 	= '255';
+		$config['encrypt_name'] 	= FALSE;
+		$config['max_size'] 		= 4096; 
+		$this->load->library('upload', $config);
+		if (!$this->upload->do_upload('profile_pic')) {
+			$error = array('error' => $this->upload->display_errors());
+			echo"test";
 			$json = [
-				'error_message' => showErrorMessage($this->upload->display_errors()),
+				// 'error_message' => showErrorMessage($this->upload->display_errors()),
 			];
-		} else {
+		}else {
 			$file_data 	= $this->upload->data();
 			$file_name 	= $path.$file_data['file_name'];
+			// $filename = $this->upload->do_upload("profile_pic");
+			var_dump($file_name);
+			// die("name");
 			$arr_file 	= explode('.', $file_name);
 			$extension 	= end($arr_file);
 			if('csv' == $extension) {
@@ -41,16 +54,18 @@ class Home extends CI_Controller {
 				$reader 	= new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 			}
 			$spreadsheet 	= $reader->load($file_name);
-			$sheet_data 	= $spreadsheet->getActiveSheet()->toArray();
+			// $sheet_data 	= $spreadsheet->getActiveSheet()->toArray();
 			$list 			= [];
             $sheetCount = $spreadsheet -> getSheetCount();
+			var_dump( $sheetCount)  ; 
+			die("here");
 for ($i = 0; $i < $sheetCount; $i++) {
    $sheet = $spreadsheet -> getSheet($i);
-   $highestRow = $worksheet->getHighestRow(); // e.g. 10
-    $highestColumn = $worksheet->getHighestColumn(); // e
+   $highestRow = $sheet->getHighestRow(); // e.g. 10
+    $highestColumn = $sheet->getHighestColumn(); // e
    $sheetData = $sheet -> toArray(null, true, true, true);
    for ($row = 9; $row <= $highestRow; ++$row) {
-    echo '<tr>' . PHP_EOL;
+    echo '<tr>' ;
     for ($col = 'A'; $col != $highestColumn; ++$col) {
         echo '<td>' .
            $sheetRecord=  $sheetData->getCell($col . $row)  ->getValue() ;
@@ -59,7 +74,8 @@ for ($i = 0; $i < $sheetCount; $i++) {
     }
     
 }
-}
+
+
 			foreach($sheet_data as $key => $val) {
 				if($key != 0) {
 					$result 	= $this->user->get(["country_code" => $val[2], "mobile" => $val[3]]);
@@ -99,14 +115,14 @@ for ($i = 0; $i < $sheetCount; $i++) {
 		}
 		echo json_encode($json);
 	}
-
+}
 	public function upload_config($path) {
 		if (!is_dir($path)) 
 			mkdir($path, 0777, TRUE);		
 		$config['upload_path'] 		= './'.$path;		
 		$config['allowed_types'] 	= 'csv|CSV|xlsx|XLSX|xls|XLS';
 		$config['max_filename']	 	= '255';
-		$config['encrypt_name'] 	= TRUE;
+		$config['encrypt_name'] 	= FALSE;
 		$config['max_size'] 		= 4096; 
 		$this->load->library('upload', $config);
 	}
