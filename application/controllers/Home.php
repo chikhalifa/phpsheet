@@ -31,7 +31,7 @@ class Home extends CI_Controller
 		$this->upload_config($path);
 		if (!$this->upload->do_upload('file')) {
 			$json = [
-				'error_message' => showErrorMessage($this->upload->display_errors()),
+				// 'error_message' => showErrorMessage($this->upload->display_errors()),
 			];
 		} else {
 			$file_data 	= $this->upload->data();
