@@ -14,7 +14,7 @@ class Home extends CI_Controller {
 		parent::__construct();
 		// Load Model
 		$this->load->helper('url', 'form');
-		$this->load->model('User_model');
+		$this->load->model('User_model','user');
 		$this->ip_address    = $_SERVER['REMOTE_ADDR'];
 		$this->datetime 	    = date("Y-m-d H:i:s");
 	}
@@ -57,30 +57,53 @@ class Home extends CI_Controller {
 			$sheet_data 	= $spreadsheet->getActiveSheet();
 			$list 			= [];
             $sheetCount = $spreadsheet -> getSheetCount();
-			var_dump( $sheet_data)  ; 
-			die("here");
-for ($i = 0; $i < $sheetCount; $i++) {
-   $sheet = $spreadsheet -> getSheet($i);
-   $highestRow = $sheet->getHighestRow(); // e.g. 10
-    $highestColumn = $sheet->getHighestColumn(); // e
-   $sheetData = $sheet -> toArray(null, true, true, true);
-   for ($row = 9; $row <= $highestRow; ++$row) {
-    echo '<tr>' ;
+			// var_dump( $sheet_data)  ; 
+			// die("here");
+// for ($i = 0; $i < $sheetCount; $i++) {
+//    $sheet = $spreadsheet -> getSheet($i);
+//    $highestRow = $sheet->getHighestRow(); // e.g. 10
+//     $highestColumn = $sheet->getHighestColumn(); // e
+//    $sheetData = $sheet -> toArray(null, true, true, true);
+//    for ($row = 9; $row <= $highestRow; ++$row) {
+//     echo '<tr>' ;
+//     for ($col = 'A'; $col != $highestColumn; ++$col) {
+//         echo '<td>' .
+//            $sheetRecord=  $sheetData->getCell($col . $row)  ->getValue() ;
+//           var_dump( $sheetRecord)  ; 
+//           die("here");
+//     }
+    
+// }
+// }
+$worksheet = $spreadsheet->getActiveSheet();
+// Get the highest row number and column letter referenced in the worksheet
+$highestRow = $worksheet->getHighestRow(); // e.g. 10
+$highestColumn = $worksheet->getHighestColumn(); // e.g 'F'
+// Increment the highest column letter
+$highestColumn++;
+
+echo '<table>' . "\n";
+for ($row = 1; $row <= $highestRow; ++$row) {
+    echo '<tr>' . PHP_EOL;
     for ($col = 'A'; $col != $highestColumn; ++$col) {
         echo '<td>' .
-           $sheetRecord=  $sheetData->getCell($col . $row)  ->getValue() ;
-          var_dump( $sheetRecord)  ; 
-          die("here");
+             $worksheet->getCell($col . $row)
+                 ->getValue() .
+             '</td>' . PHP_EOL;
     }
-    
+    echo '</tr>' . PHP_EOL;
 }
-
-
+echo '</table>' . PHP_EOL;
+die("val");
 			foreach($sheet_data as $key => $val) {
+				var_dump($val);
+						die("val");
 				if($key != 0) {
+					
 					$result 	= $this->user->get(["country_code" => $val[2], "mobile" => $val[3]]);
 					if($result) {
 					} else {
+						
 						$list [] = [
 							'name'					=> $val[0],
 							'country_code'			=> $val[1],
@@ -114,7 +137,7 @@ for ($i = 0; $i < $sheetCount; $i++) {
 			}
 		}
 		echo json_encode($json);
-	}
+	// }
 }
 	public function upload_config($path) {
 		if (!is_dir($path)) 
