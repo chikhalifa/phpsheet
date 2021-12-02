@@ -54,10 +54,10 @@ class Home extends CI_Controller {
 				$reader 	= new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 			}
 			$spreadsheet 	= $reader->load($file_name);
-			// $sheet_data 	= $spreadsheet->getActiveSheet()->toArray();
+			$sheet_data 	= $spreadsheet->getActiveSheet();
 			$list 			= [];
             $sheetCount = $spreadsheet -> getSheetCount();
-			var_dump( $sheetCount)  ; 
+			var_dump( $sheet_data)  ; 
 			die("here");
 for ($i = 0; $i < $sheetCount; $i++) {
    $sheet = $spreadsheet -> getSheet($i);
