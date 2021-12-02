@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 date_default_timezone_set('Africa/Lagos');
 require 'vendor/autoload.php';
 
@@ -9,8 +9,10 @@ use PhpOffice\PhpSpreadsheet\WriterXlsx;
 use PhpOffice\PhpSpreadsheet\ReaderIReader;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-class Home extends CI_Controller {
-    public function __construct() {
+class Home extends CI_Controller
+{
+	public function __construct()
+	{
 		parent::__construct();
 		// Load Model
 		$this->load->model('User_model', 'user');
@@ -22,7 +24,8 @@ class Home extends CI_Controller {
 	{
 		$this->load->view('index');
 	}
-    public function import() {
+	public function import()
+	{
 		$path 		= 'uploads/imports/';
 		$json 		= [];
 		$this->upload_config($path);
@@ -32,10 +35,10 @@ class Home extends CI_Controller {
 			];
 		} else {
 			$file_data 	= $this->upload->data();
-			$file_name 	= $path.$file_data['file_name'];
+			$file_name 	= $path . $file_data['file_name'];
 			$arr_file 	= explode('.', $file_name);
 			$extension 	= end($arr_file);
-			if('csv' == $extension) {
+			if ('csv' == $extension) {
 				$reader 	= new \PhpOffice\PhpSpreadsheet\Reader\Csv();
 			} else {
 				$reader 	= new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
@@ -43,29 +46,28 @@ class Home extends CI_Controller {
 			$spreadsheet 	= $reader->load($file_name);
 			$sheet_data 	= $spreadsheet->getActiveSheet()->toArray();
 			$list 			= [];
-            $sheetCount = $spreadsheet -> getSheetCount();
-for ($i = 0; $i < $sheetCount; $i++) {
-   $sheet = $spreadsheet -> getSheet($i);
-   $highestRow = $worksheet->getHighestRow(); // e.g. 10
-    $highestColumn = $worksheet->getHighestColumn(); // e
-   $sheetData = $sheet -> toArray(null, true, true, true);
-   for ($row = 9; $row <= $highestRow; ++$row) {
-    echo '<tr>' . PHP_EOL;
-    for ($col = 'A'; $col != $highestColumn; ++$col) {
-        echo '<td>' .
-           $sheetRecord=  $sheetData->getCell($col . $row)  ->getValue() ;
-          var_dump( $sheetRecord)  ; 
-          die("here");
-    }
-    
-}
-}
-			foreach($sheet_data as $key => $val) {
-				if($key != 0) {
+			$sheetCount = $spreadsheet->getSheetCount();
+			for ($i = 0; $i < $sheetCount; $i++) {
+				$sheet = $spreadsheet->getSheet($i);
+				$highestRow = $sheet->getHighestRow(); // e.g. 10
+				$highestColumn = $sheet->getHighestColumn(); // e
+				$sheetData = $sheet->toArray(null, true, true, true);
+				for ($row = 9; $row <= $highestRow; ++$row) {
+					echo '<tr>' . PHP_EOL;
+					for ($col = 'A'; $col != $highestColumn; ++$col) {
+						echo '<td>' .
+							$sheetRecord =  $sheetData->getCell($col . $row)->getValue();
+						var_dump($sheetRecord);
+						die("here");
+					}
+				}
+			}
+			foreach ($sheet_data as $key => $val) {
+				if ($key != 0) {
 					$result 	= $this->user->get(["country_code" => $val[2], "mobile" => $val[3]]);
-					if($result) {
+					if ($result) {
 					} else {
-						$list [] = [
+						$list[] = [
 							'name'					=> $val[0],
 							'country_code'			=> $val[1],
 							'mobile'				=> $val[2],
@@ -78,11 +80,11 @@ for ($i = 0; $i < $sheetCount; $i++) {
 					}
 				}
 			}
-			if(file_exists($file_name))
+			if (file_exists($file_name))
 				unlink($file_name);
-			if(count($list) > 0) {
+			if (count($list) > 0) {
 				$result 	= $this->user->add_batch($list);
-				if($result) {
+				if ($result) {
 					$json = [
 						'success_message' 	=> showSuccessMessage("All Entries are imported successfully."),
 					];
@@ -100,15 +102,15 @@ for ($i = 0; $i < $sheetCount; $i++) {
 		echo json_encode($json);
 	}
 
-	public function upload_config($path) {
-		if (!is_dir($path)) 
-			mkdir($path, 0777, TRUE);		
-		$config['upload_path'] 		= './'.$path;		
+	public function upload_config($path)
+	{
+		if (!is_dir($path))
+			mkdir($path, 0777, TRUE);
+		$config['upload_path'] 		= './' . $path;
 		$config['allowed_types'] 	= 'csv|CSV|xlsx|XLSX|xls|XLS';
 		$config['max_filename']	 	= '255';
 		$config['encrypt_name'] 	= TRUE;
-		$config['max_size'] 		= 4096; 
+		$config['max_size'] 		= 4096;
 		$this->load->library('upload', $config);
 	}
-
 }

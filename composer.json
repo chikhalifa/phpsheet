@@ -14,7 +14,8 @@
 	"require": {
 		"php": ">=5.3.7",
 		"romainrg/rabbitmq_client": "^6.2",
-		"phpoffice/phpspreadsheet": "^1.20"
+		"phpoffice/phpspreadsheet": "^1.20",
+		"ext-gd": "*"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
