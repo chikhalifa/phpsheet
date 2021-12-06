@@ -12,10 +12,21 @@
 		"source": "https://github.com/bcit-ci/CodeIgniter"
 	},
 	"require": {
-		"php": ">=5.3.7",
+		
+		"php": ">=7.2",
 		"romainrg/rabbitmq_client": "^6.2",
-		"phpoffice/phpspreadsheet": "^1.20"
+		"phpoffice/phpspreadsheet": "^1.20",
+		"phpoffice/phpexcel": "^1.8"
 	},
+	"repositories": [{
+		"url": "https://github.com/ruecoder/ExcelBundle.git",
+		"type": "git"
+	 },
+	 {
+		"url": "https://github.com/ruecoder/PHPExcel.git",
+		"type": "git"
+	 }
+  ],
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
 	}
