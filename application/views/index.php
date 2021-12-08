@@ -22,7 +22,8 @@
             </div>
         </div>
         <div class="card-body">
-            <form id="form-upload-user" method="post" autocomplete="off">
+        
+            <!-- <form id="form-upload-user" method="post" autocomplete="off" >
                 <div class="sub-result"></div>
                 <div class="form-group">
                     <label class="control-label">Choose File <small class="text-danger">*</small></label>
@@ -39,7 +40,13 @@
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light" id="btnUpload">Upload</button>
                 </div>
-            </form>
+            </form> -->
+            <?php echo form_open_multipart('home/import');?>
+	<?php echo "<input type='file' name='profile_pic' size='20' />"; ?>
+	<?php echo "<input type='submit' name='submit' value='upload' /> ";?>
+	<?php echo "</form>"?>
+            
+           
         </div>
     </div>
 </section>
