@@ -54,6 +54,7 @@ class Home extends CI_Controller
 			} else {
 				$reader     = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 			}
+			$reader->setReadDataOnly( false );
 			$spreadsheet    = $reader->load($file_name);
 			$sheet_data     = $spreadsheet->getActiveSheet();
 			$list           = [];
@@ -65,31 +66,31 @@ class Home extends CI_Controller
 			}
 
 			// $worksheet = $spreadsheet->getActiveSheet()->toArray(null, false, true, true);
-			$worksheet = $spreadsheet->getSheetByName($TITLE)->toArray(null, false, true, true);
+			$worksheet = $spreadsheet->getSheetByName($TITLE);
 			// var_dump($worksheet);
 			// echo '<pre>';
 			// print_r($worksheet);
 			// die("here");
-			$worksheetCount = count($worksheet);
-			if ($worksheetCount > 1) {
-				for ($row = 9; $row <= $worksheetCount; $row++) {
-					$name = $worksheet[$row]['C'];
-					$additional_data = array(
-						'area'    => $worksheet[$row]['B'],
-						'GBNLURN'     => $worksheet[$row]['C'],
+			// $worksheetCount = count($worksheet);
+			// if ($worksheetCount > 1) {
+			// 	for ($row = 9; $row <= $worksheetCount; $row++) {
+			// 		$name = $worksheet[$row]['C'];
+			// 		$additional_data = array(
+			// 			'area'    => $worksheet[$row]['B'],
+			// 			'GBNLURN'     => $worksheet[$row]['C'],
 
-						'BATURN'   => $worksheet[$row]['D'],
-						'Name'          => $worksheet[$row]['D'],
-						'Band'       => $worksheet[$row]['E'],
-						// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getFormattedValue(),
-						'cust_name'     => $worksheet[$row]['C'],
-						'cust_code'     => $worksheet[$row]['C']
+			// 			'BATURN'   => $worksheet[$row]['D'],
+			// 			'Name'          => $worksheet[$row]['D'],
+			// 			'Band'       => $worksheet[$row]['E'],
+			// 			// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getFormattedValue(),
+			// 			'cust_name'     => $worksheet[$row]['C'],
+			// 			'cust_code'     => $worksheet[$row]['C']
 
-					);
-					print_r($additional_data);
-				}
-				die("here");
-			}
+			// 		);
+			// 		print_r($additional_data);
+			// 	}
+			// 	die("here");
+			// }
 
 			$highestRow = $worksheet->getHighestRow(); // e.g. 10
 			$highestColumn = $worksheet->getHighestColumn(); // e.g 'F'
@@ -97,21 +98,35 @@ class Home extends CI_Controller
 			//  NULL, TRUE, FALSE);
 
 
-			// Increment the highest column letter
-			$highestColumn++;
-			echo '<table>' . "\n";
-			for ($row = 1; $row <= $highestRow; ++$row) {
-				echo '<tr>' . PHP_EOL;
-				for ($col = 'A'; $col != $highestColumn; ++$col) {
-					echo '<td>' .
-						$worksheet->getCell($col . $row)
-						->getValue() .
+			// // Increment the highest column letter
+			// $highestColumn++;
+			// echo '<table>' . "\n";
+			// for ($row = 1; $row <= $highestRow; ++$row) {
+			// 	echo '<tr>' . PHP_EOL;
+			// 	for ($col = 'A'; $col != $highestColumn; ++$col) {
+			// 		echo '<td>' .
+			// 			$worksheet->getCell($col . $row)
+			// 			->getCalculatedValue()  .
 
-						'</td>' . PHP_EOL;
-				}
-				echo '</tr>' . PHP_EOL;
-			}
-			echo '</table>' . PHP_EOL;
+			// 			'</td>' . PHP_EOL;
+			// 	}
+			// 	echo '</tr>' . PHP_EOL;
+			// }
+			// echo '</table>' . PHP_EOL;
+			// Get the highest row and column numbers referenced in the worksheet
+$highestRow = $worksheet->getHighestRow(); // e.g. 10
+$highestColumn = $worksheet->getHighestColumn(); // e.g 'F'
+$highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn); // e.g. 5
+
+echo '<table>' . "\n";
+for ($row = 1; $row <= $highestRow; ++$row) {
+    echo '<tr>' . PHP_EOL;
+    for ($col = 1; $col <= $highestColumnIndex; ++$col) {
+        $value = $worksheet->getCellByColumnAndRow($col, $row)->getFormattedValue();
+        echo '<td>' . $value . '</td>' . PHP_EOL;
+    }
+    echo '</tr>' . PHP_EOL;
+}
 			die("val");
 			foreach ($sheet_data as $key => $val) {
 				if ($key != 0) {
