@@ -122,7 +122,12 @@ echo '<table>' . "\n";
 for ($row = 1; $row <= $highestRow; ++$row) {
     echo '<tr>' . PHP_EOL;
     for ($col = 1; $col <= $highestColumnIndex; ++$col) {
-        $value = $worksheet->getCellByColumnAndRow($col, $row)->getFormattedValue();
+		if ($worksheet->getCellByColumnAndRow($col, $row)->isFormula()) {
+			$value = $worksheet->getCellByColumnAndRow($col, $row)->getOldCalculatedValue();
+		} else {
+			$value = $worksheet->getCellByColumnAndRow($col, $row)->getValue();
+		}
+        // $value = $worksheet->getCellByColumnAndRow($col, $row)->getFormattedValue();
         echo '<td>' . $value . '</td>' . PHP_EOL;
     }
     echo '</tr>' . PHP_EOL;

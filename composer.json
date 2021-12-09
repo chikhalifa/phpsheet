@@ -16,11 +16,7 @@
 		"php": ">=7.2",
 		"romainrg/rabbitmq_client": "^6.2",
 		"phpoffice/phpspreadsheet": "^1.20",
-<<<<<<< HEAD
 		"ext-gd": "*"
-=======
-		"phpoffice/phpexcel": "^1.8"
->>>>>>> d7f3a20c365b1bc7b9c76531a5c37bbb2c760137
 	},
 	"repositories": [{
 		"url": "https://github.com/ruecoder/ExcelBundle.git",
