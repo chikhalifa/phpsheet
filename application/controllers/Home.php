@@ -18,6 +18,7 @@ class Home extends CI_Controller
 		// Load Model
 		$this->load->helper('url', 'form');
 		$this->load->model('User_model', 'user');
+		$this->load->library('session');
 		$this->ip_address    = $_SERVER['REMOTE_ADDR'];
 		$this->datetime         = date("Y-m-d H:i:s");
 	}
@@ -67,31 +68,114 @@ class Home extends CI_Controller
 
 			// $worksheet = $spreadsheet->getActiveSheet()->toArray(null, false, true, true);
 			$worksheet = $spreadsheet->getSheetByName($TITLE);
-			// var_dump($worksheet);
+			
+			$rows = [];
+foreach ($worksheet->getRowIterator() AS $row) {
+    $cellIterator = $row->getCellIterator();
+    $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+    $cells = [];
+    foreach ($cellIterator as $cell) {
+        // $cells[] = $cell->getValue();
+		$cells[] = ($cell->isFormula())?$cell->getOldCalculatedValue():$cell->getValue();
+    }
+    $rows[] = $cells;
+}
+			// var_dump($rows);
+			// die("here1");
+			$rowsCount = count($rows);
+			if ($rowsCount > 1) {
+				for ($row = 9; $row <= $rowsCount; $row++) {
+					$name = "no value";
+					$regional_target_volume = array(
+						// 'area'    => ($worksheet->getCell($worksheet[$row]['B'])->isFormula())?$worksheet->getCell($worksheet[$row]['B'])->getOldCalculatedValue():$worksheet->getCell($worksheet[$row]['B'])->getValue(),
+						'area'     => isset($rows[$row][1]) ? $rows[$row][1]: null,
+						'GBNLURN'     => isset($rows[$row][2]) ? $rows[$row][2]: null,
+						
+						'Name'          => isset($rows[$row][4]) ? $rows[$row][4]: null,
+						'Band'       => isset($rows[$row][5]) ? $rows[$row][5]: null,
+						'Total_Base_Target'       => isset($rows[$row][6]) ? $rows[$row][6]: null,
+						'Benson_and_Hedges_Cool_Fusion'       => isset($rows[$row][7]) ? $rows[$row][7]: null,
+						'BH_Tropical_Boost'       => isset($rows[$row][8]) ? $rows[$row][8]: null,
+						// 'BH_Switch'       => isset($rows[$row][9]) ? $rows[$row][9]: null,
+						'Benson_Hedges_Boost'       => isset($rows[$row][10]) ? $rows[$row][10]: null,
+						'Benson_Hedges_Demi-Slims'       => isset($rows[$row][11]) ? $rows[$row][11]: null,
+						// 'Pall_Mall_Excel_Blend'       => isset($rows[$row][12]) ? $rows[$row][12]: null,
+						'Benson_and_Hedges_Flavour'       => isset($rows[$row][13]) ? $rows[$row][13]: null,
+						'Dunhill_Switch'       => isset($rows[$row][14]) ? $rows[$row][14]: null,
+						'st_Moritz_by_dunhill'       => isset($rows[$row][15]) ? $rows[$row][15]: null,
+						'Rothmans_Menthol'       => isset($rows[$row][16]) ? $rows[$row][16]: null,
+						'Rothmans_Menthol_Mix'       => isset($rows[$row][17]) ? $rows[$row][17]: null,
+						'Pall_Mall_Rubi'       => isset($rows[$row][18]) ? $rows[$row][18]: null,
+						'Pall_Mall_Boost'       => isset($rows[$row][19]) ? $rows[$row][19]: null,
+						'Pall_Mall_Filter'       => isset($rows[$row][20]) ? $rows[$row][20]: null,
+						'Pall_Mall_Menthol'       => isset($rows[$row][21]) ? $rows[$row][21]: null,
+						'Rothmans_Flavour'       => isset($rows[$row][22]) ? $rows[$row][22]: null,
+						'Royal_Std_Filter'       => isset($rows[$row][23]) ? $rows[$row][23]: null,
+						'BH_Demi_Rubi'       => isset($rows[$row][24]) ? $rows[$row][24]: null,
+						'Rothmans_Switch_Indigo'       => isset($rows[$row][25]) ? $rows[$row][25]: null,
+						'Dunhill_Lights'       => isset($rows[$row][26]) ? $rows[$row][26]: null,
+						'Total_Target_Value'       => isset($rows[$row][28]) ? $rows[$row][28]: null,
+						// 'date_updated'            => $this->datetime,
+
+						
+						
+						// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getOldCalculatedValue(),
+						
+
+					);
+					var_dump($regional_target_volume);
+					die("here");
+					if (file_exists($file_name))
+				unlink($file_name);
+			if (count($regional_target_volume) > 0) {
+				
+				$this->load->model('User_model');
+
+				$result =$this->User_model->add2($regional_target_volume);
+				// $result     = $this->user->add_batch2($regional_target_volume);
+				if ($result) {
+					// $json = [
+					// 	// 'success_message'    => showSuccessMessage("All Entries are imported successfully."),
+					// ];
+					echo '<script>alert("You Have Successfully updated this Record!");</script>';
+					// $this->session->set_flashdata('success',"Data Inserted Successfully");
+					// echo "yes";
+					redirect('/', 'refresh');
+				} else {
+					$json = [
+						// 'error_message'  => showErrorMessage("Something went wrong. Please try again.")
+					];
+				}
+			}
+				}
+				
+				die("here");
+			}
+			die("here");
 			// echo '<pre>';
 			// print_r($worksheet);
 			// die("here");
-			// $worksheetCount = count($worksheet);
-			// if ($worksheetCount > 1) {
-			// 	for ($row = 9; $row <= $worksheetCount; $row++) {
-			// 		$name = $worksheet[$row]['C'];
-			// 		$additional_data = array(
-			// 			'area'    => $worksheet[$row]['B'],
-			// 			'GBNLURN'     => $worksheet[$row]['C'],
+			$worksheetCount = count($worksheet);
+			if ($worksheetCount > 1) {
+				for ($row = 9; $row <= $worksheetCount; $row++) {
+					$name = $worksheet[$row]['C'];
+					$additional_data = array(
+						// 'area'    => ($worksheet->getCell($worksheet[$row]['B'])->isFormula())?$worksheet->getCell($worksheet[$row]['B'])->getOldCalculatedValue():$worksheet->getCell($worksheet[$row]['B'])->getValue(),
+						'GBNLURN'     => $worksheet[$row]['C'],
 
-			// 			'BATURN'   => $worksheet[$row]['D'],
-			// 			'Name'          => $worksheet[$row]['D'],
-			// 			'Band'       => $worksheet[$row]['E'],
-			// 			// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getFormattedValue(),
-			// 			'cust_name'     => $worksheet[$row]['C'],
-			// 			'cust_code'     => $worksheet[$row]['C']
+						'BATURN'   => $worksheet[$row]['D'],
+						'Name'          => $worksheet[$row]['D'],
+						'Band'       => $worksheet[$row]['G'],
+						// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getOldCalculatedValue(),
+						'cust_name'     => $worksheet[$row]['C'],
+						'cust_code'     => $worksheet[$row]['C']
 
-			// 		);
-			// 		print_r($additional_data);
-			// 	}
-			// 	die("here");
-			// }
-
+					);
+					print_r($additional_data);
+				}
+				die("here");
+			}
+// 
 			$highestRow = $worksheet->getHighestRow(); // e.g. 10
 			$highestColumn = $worksheet->getHighestColumn(); // e.g 'F'
 			// 	$rowData = $worksheet->rangeToArray('A2:' . $highestColumn . $highestRow,
@@ -117,21 +201,27 @@ class Home extends CI_Controller
 $highestRow = $worksheet->getHighestRow(); // e.g. 10
 $highestColumn = $worksheet->getHighestColumn(); // e.g 'F'
 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn); // e.g. 5
-
+$rowsData = [];
 echo '<table>' . "\n";
-for ($row = 1; $row <= $highestRow; ++$row) {
+for ($row = 8; $row <= $highestRow; ++$row) {
     echo '<tr>' . PHP_EOL;
-    for ($col = 1; $col <= $highestColumnIndex; ++$col) {
+    for ($col = 2; $col <= $highestColumnIndex; ++$col) {
 		if ($worksheet->getCellByColumnAndRow($col, $row)->isFormula()) {
 			$value = $worksheet->getCellByColumnAndRow($col, $row)->getOldCalculatedValue();
 		} else {
 			$value = $worksheet->getCellByColumnAndRow($col, $row)->getValue();
 		}
         // $value = $worksheet->getCellByColumnAndRow($col, $row)->getFormattedValue();
-        echo '<td>' . $value . '</td>' . PHP_EOL;
+        // echo '<td>' . $value . '</td>' . PHP_EOL;
+		$rowsData=$value;
+		var_dump($rowsData );
+		
     }
-    echo '</tr>' . PHP_EOL;
+    // echo '</tr>' . PHP_EOL;
+	
+	
 }
+
 			die("val");
 			foreach ($sheet_data as $key => $val) {
 				if ($key != 0) {

@@ -6,7 +6,7 @@ class User_model extends CI_Model {
 	public function __construct() {
 		parent::__construct();
 		$this->table = 'regional_credit_volume';
-        $this->table1 = 'regional_credit_volume';
+        $this->table1 = 'regional_target_volume';
         
 	}
     public $primary_table = '';
@@ -52,6 +52,9 @@ class User_model extends CI_Model {
 
 	public function add_batch($data) {
 		return $this->db->insert_batch($this->table, $data);
+	}
+	public function add_batch2($data) {
+		return $this->db->insert_batch($this->table1, $data);
 	}
 
 }

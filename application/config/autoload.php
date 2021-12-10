@@ -89,8 +89,11 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
+$autoload['libraries'] = array('session');
 $autoload['helper'] = array('url');
 $autoload['helper'] = array('form');
+$autoload['libraries'] = array('database');
+// $autoload['libraries'] = array('session');
 
 /*
 | -------------------------------------------------------------------
