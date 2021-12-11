@@ -18,7 +18,6 @@ class Home extends CI_Controller
 		// Load Model
 		$this->load->helper('url', 'form');
 		$this->load->model('User_model', 'user');
-		$this->load->library('session');
 		$this->ip_address    = $_SERVER['REMOTE_ADDR'];
 		$this->datetime         = date("Y-m-d H:i:s");
 	}
@@ -99,7 +98,7 @@ foreach ($worksheet->getRowIterator() AS $row) {
 						// 'BH_Switch'       => isset($rows[$row][9]) ? $rows[$row][9]: null,
 						'Benson_Hedges_Boost'       => isset($rows[$row][10]) ? $rows[$row][10]: null,
 						'Benson_Hedges_Demi-Slims'       => isset($rows[$row][11]) ? $rows[$row][11]: null,
-						// 'Pall_Mall_Excel_Blend'       => isset($rows[$row][12]) ? $rows[$row][12]: null,
+						// 'PallMallExcelBlend'       => isset($rows[$row][12]) ? $rows[$row][12]: null,
 						'Benson_and_Hedges_Flavour'       => isset($rows[$row][13]) ? $rows[$row][13]: null,
 						'Dunhill_Switch'       => isset($rows[$row][14]) ? $rows[$row][14]: null,
 						'st_Moritz_by_dunhill'       => isset($rows[$row][15]) ? $rows[$row][15]: null,
@@ -115,7 +114,7 @@ foreach ($worksheet->getRowIterator() AS $row) {
 						'Rothmans_Switch_Indigo'       => isset($rows[$row][25]) ? $rows[$row][25]: null,
 						'Dunhill_Lights'       => isset($rows[$row][26]) ? $rows[$row][26]: null,
 						'Total_Target_Value'       => isset($rows[$row][28]) ? $rows[$row][28]: null,
-						// 'date_updated'            => $this->datetime,
+						'date_updated'            => $this->datetime,
 
 						
 						
@@ -123,8 +122,7 @@ foreach ($worksheet->getRowIterator() AS $row) {
 						
 
 					);
-					var_dump($regional_target_volume);
-					die("here");
+					// var_dump($regional_target_volume);
 					if (file_exists($file_name))
 				unlink($file_name);
 			if (count($regional_target_volume) > 0) {
@@ -134,13 +132,11 @@ foreach ($worksheet->getRowIterator() AS $row) {
 				$result =$this->User_model->add2($regional_target_volume);
 				// $result     = $this->user->add_batch2($regional_target_volume);
 				if ($result) {
-					// $json = [
-					// 	// 'success_message'    => showSuccessMessage("All Entries are imported successfully."),
-					// ];
-					echo '<script>alert("You Have Successfully updated this Record!");</script>';
-					// $this->session->set_flashdata('success',"Data Inserted Successfully");
-					// echo "yes";
-					redirect('/', 'refresh');
+					$json = [
+						// 'success_message'    => showSuccessMessage("All Entries are imported successfully."),
+					];
+					// echo '<script>alert("You Have Successfully updated this Record!");</script>';
+					echo "yes";
 				} else {
 					$json = [
 						// 'error_message'  => showErrorMessage("Something went wrong. Please try again.")
