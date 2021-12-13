@@ -20,7 +20,6 @@ class Home extends CI_Controller
 		$this->load->model('User_model', 'user');
 		$this->ip_address    = $_SERVER['REMOTE_ADDR'];
 		$this->datetime         = date("Y-m-d H:i:s");
-		$this->requestid ="ABCD123";
 	}
 	public function index()
 	{
@@ -116,45 +115,6 @@ foreach ($worksheet->getRowIterator() AS $row) {
 						'Dunhill_Lights'       => isset($rows[$row][26]) ? $rows[$row][26]: null,
 						'Total_Target_Value'       => isset($rows[$row][28]) ? $rows[$row][28]: null,
 						'date_updated'            => $this->datetime,
-						'request_id'            => $this->requestid,
-						
-						
-						// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getOldCalculatedValue(),
-						
-
-					);
-					// second table
-					$regional_credit_volume = array(
-						// 'area'    => ($worksheet->getCell($worksheet[$row]['B'])->isFormula())?$worksheet->getCell($worksheet[$row]['B'])->getOldCalculatedValue():$worksheet->getCell($worksheet[$row]['B'])->getValue(),
-						'area'     => isset($rows[$row][1]) ? $rows[$row][1]: null,
-						'GBNLURN'     => isset($rows[$row][2]) ? $rows[$row][2]: null,
-						
-						'Name'          => isset($rows[$row][4]) ? $rows[$row][4]: null,
-						'Band'       => isset($rows[$row][5]) ? $rows[$row][5]: null,
-						'Total_Base_Target'       => isset($rows[$row][6]) ? $rows[$row][6]: null,
-						'Total_Credit_Volume'       => isset($rows[$row][30]) ? $rows[$row][30]: null,
-						'Dunhill_Lights'       => isset($rows[$row][31]) ? $rows[$row][31]: null,
-						// 'BH_Switch'       => isset($rows[$row][9]) ? $rows[$row][9]: null,
-						'st_Moritz_by_dunhill'       => isset($rows[$row][32]) ? $rows[$row][32]: null,
-						'Benson_and_Hedges_Flavour'       => isset($rows[$row][33]) ? $rows[$row][33]: null,
-						'B_and_H_Switch'       => isset($rows[$row][34]) ? $rows[$row][34]: null,
-						'Benson_Hedges_Demi-Slims'       => isset($rows[$row][35]) ? $rows[$row][35]: null,
-						'Benson_Hedges_Boost'       => isset($rows[$row][36]) ? $rows[$row][36]: null,
-						'Rothmans_Flavour'       => isset($rows[$row][37]) ? $rows[$row][37]: null,
-						'Rothmans_Switch'       => isset($rows[$row][38]) ? $rows[$row][38]: null,
-						'BH_Demi_Rubi'       => isset($rows[$row][39]) ? $rows[$row][39]: null,
-						'Rothmans_Menthol'       => isset($rows[$row][40]) ? $rows[$row][40]: null,
-						'Pall_Mall_Filter'       => isset($rows[$row][41]) ? $rows[$row][41]: null,
-						'Benson_and_Hedges_Cool_Fusion'       => isset($rows[$row][42]) ? $rows[$row][42]: null,
-						'BH_Tropical_Boost'       => isset($rows[$row][43]) ? $rows[$row][43]: null,
-						'Rothmans_Menthol_Mix'       => isset($rows[$row][44]) ? $rows[$row][44]: null,
-						'Pall_Mall_Menthol'       => isset($rows[$row][45]) ? $rows[$row][45]: null,
-						'Total_Target_Value'       => isset($rows[$row][46]) ? $rows[$row][46]: null,
-						'Maximum_Credit_Allocation'       => isset($rows[$row][47]) ? $rows[$row][47]: null,
-						'Comments'       => isset($rows[$row][48]) ? $rows[$row][48]: null,
-						'Customer_Credit_Rating'       => isset($rows[$row][49]) ? $rows[$row][49]: null,
-						'date_updated'            => $this->datetime,
-						'request_id'            => $this->requestid,
 
 						
 						
@@ -162,17 +122,16 @@ foreach ($worksheet->getRowIterator() AS $row) {
 						
 
 					);
-					// var_dump($regional_credit_volume);
+					// var_dump($regional_target_volume);
 					if (file_exists($file_name))
 				unlink($file_name);
-			if (count($regional_target_volume) > 0 && count($regional_credit_volume) > 0) {
+			if (count($regional_target_volume) > 0) {
 				
 				$this->load->model('User_model');
 
 				$result =$this->User_model->add2($regional_target_volume);
-				$result2 =$this->User_model->add($regional_credit_volume);
 				// $result     = $this->user->add_batch2($regional_target_volume);
-				if ($result && $result2) {
+				if ($result) {
 					$json = [
 						// 'success_message'    => showSuccessMessage("All Entries are imported successfully."),
 					];
