@@ -5,7 +5,7 @@ require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-// use PhpOffice\PhpSpreadsheet\WriterXlsx;
+use PhpOffice\PhpSpreadsheet\WriterXlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use phpoffice\phpexcel\IOFactor;
@@ -50,6 +50,14 @@ class Home extends CI_Controller
 			$file_name  = $path . $file_data['file_name'];
 			$arr_file   = explode('.', $file_name);
 			$extension  = end($arr_file);
+			$post_file = array(
+				'request_id' => $this->requestid, 
+				'file_type' => $extension, 
+				'filename' => $file_data['file_name'],
+				'attachment_file' => $file_name,
+				'dateadded' => date('Y-m-d H:i:s')
+			);      
+			$this->db->insert('attachmentDetail', $post_file);
 			if ('csv' == $extension) {
 				$reader     = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
 			} else {
@@ -99,7 +107,7 @@ foreach ($worksheet->getRowIterator() AS $row) {
 						// 'BH_Switch'       => isset($rows[$row][9]) ? $rows[$row][9]: null,
 						'Benson_Hedges_Boost'       => isset($rows[$row][10]) ? $rows[$row][10]: null,
 						'Benson_Hedges_Demi-Slims'       => isset($rows[$row][11]) ? $rows[$row][11]: null,
-						// 'PallMallExcelBlend'       => isset($rows[$row][12]) ? $rows[$row][12]: null,
+						// 'Pall_Mall_ExcelBlend'       => isset($rows[$row][12]) ? $rows[$row][12]: null,
 						'Benson_and_Hedges_Flavour'       => isset($rows[$row][13]) ? $rows[$row][13]: null,
 						'Dunhill_Switch'       => isset($rows[$row][14]) ? $rows[$row][14]: null,
 						'st_Moritz_by_dunhill'       => isset($rows[$row][15]) ? $rows[$row][15]: null,
@@ -259,45 +267,8 @@ for ($row = 8; $row <= $highestRow; ++$row) {
 	
 }
 
-			die("val");
-			foreach ($sheet_data as $key => $val) {
-				if ($key != 0) {
-					$result     = $this->user->get(["country_code" => $val[2], "mobile" => $val[3]]);
-					if ($result) {
-					} else {
-						$list[] = [
-							'name'                  => $val[0],
-							'country_code'          => $val[1],
-							'mobile'                => $val[2],
-							'email'                 => $val[3],
-							'city'                  => $val[4],
-							'ip_address'            => $this->ip_address,
-							'created_at'            => $this->datetime,
-							'status'                => "1",
-						];
-					}
-				}
-			}
-			if (file_exists($file_name))
-				unlink($file_name);
-			if (count($list) > 0) {
-				$result     = $this->user->add_batch($list);
-				if ($result) {
-					$json = [
-						// 'success_message'    => showSuccessMessage("All Entries are imported successfully."),
-					];
-				} else {
-					$json = [
-						// 'error_message'  => showErrorMessage("Something went wrong. Please try again.")
-					];
-				}
-			} else {
-				$json = [
-					// 'error_message' => showErrorMessage("No new record is found."),
-				];
-			}
-	
-		echo json_encode($json);
+			
+			
 	}
 	}
 
@@ -429,4 +400,172 @@ for ($row = 8; $row <= $highestRow; ++$row) {
 		$config['max_size']         = 4096;
 		$this->load->library('upload', $config);
 	}
+	// export file
+	public function Export($request_id="")  {
+		$this->load->model('User_model');
+		$request=($request_id === '')?$this->requestid:$request_id;
+		// $request_id =$this->request_id;
+		$subscribers = $this->User_model->get_records($request);
+		$sql="SELECT filename from attachmentDetail WHERE request_id = '$request'";       
+        $filenamedatail = $this->User_model->run_qry($sql);
+		$array = json_decode(json_encode($filenamedatail), true);
+		$filename=$array["filename"];
+		var_dump($array["filename"]);
+		// die("hh");
+		require_once APPPATH . '/third_party/Phpexcel/Bootstrap.php';
+
+		// Create new Spreadsheet object
+		$spreadsheet =  new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		
+// Set document properties
+		$spreadsheet->getProperties()->setCreator('Nubiaville.com');
+				$spreadsheet->getProperties()->setLastModifiedBy('Samuel Obe');
+				$spreadsheet->getProperties()->setTitle('Phpecxel codeigniter tutorial');
+				$spreadsheet->getProperties()->setSubject('integrate codeigniter with PhpExcel');
+				$spreadsheet ->getProperties()->setDescription('');
+
+		// add style to the header
+		$styleArray = array(
+				'font' => array(
+						'bold' => true,
+				),
+				'alignment' => array(
+						'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+						'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+				),
+				'borders' => array(
+						'top' => array(
+								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+						),
+				),
+				'fill' => array(
+						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+						'rotation' => 90,
+						'startcolor' => array(
+								'argb' => 'FFA0A0A0',
+						),
+						'endcolor' => array(
+								'argb' => 'FFFFFFFF',
+						),
+				),
+		);
+		// $spreadsheet->getActiveSheet()->getStyle('A1:AC')->applyFromArray($styleArray);
+
+		$sheet = $spreadsheet->getActiveSheet();
+		// auto fit column to content
+
+		// foreach(array_merge(range('A','Z'), ['AA', 'AC']) as $columnID) {
+			foreach (range('A', $sheet->getHighestColumn()) as $col) {
+			// $spreadsheet->getActiveSheet()->getColumnDimension($columnID);
+			$sheet->getColumnDimension($col)->setAutoSize(true);
+
+			// var_dump($spreadsheet);
+		// die("het");
+					// $spreadsheet ->setAutoSize(true);
+		}
+		// set the names of header cells
+		$spreadsheet->setActiveSheetIndex(0);
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("A1",'AREA');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("B1",'GBNL URN');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("C1",'Name');
+		$spreadsheet	->setActiveSheetIndex(0)->setCellValue("D1",'Band');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("E1",'Total Base Target');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("F1",'Benson and Hedges Cool Fusion');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("G1",'B&H Tropical Boost');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("H1",'B & H Switch');
+				
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("I1",'Rothmans Switch');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("J1",'Benson & Hedges Boost');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("K1",'Benson & Hedges Demi-Slims');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("L1",'Pall Mall - Excel Blend');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("M1",'Benson & Hedges Flavour');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("N1",'Dunhill Switch');
+		$spreadsheet	->setActiveSheetIndex(0)->setCellValue("O1",'ST Moritz By Dunhill');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("P1",'Rothmans Menthol');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("Q1",'Rothmans Menthol Mix');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("R1",'Pall Mall Rubi');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("S1",'Pall Mall Boost');
+		$spreadsheet	->setActiveSheetIndex(0)->setCellValue("T1",'Pall Mall Filter');
+		$spreadsheet	->setActiveSheetIndex(0)->setCellValue("U1",'Pall Mall Menthol');
+		$spreadsheet	->setActiveSheetIndex(0)->setCellValue("V1",'Rothmans Flavour');
+		$spreadsheet	->setActiveSheetIndex(0)->setCellValue("W1",'Royal  Std Filter');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("X1",'B&H Demi Rubi');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("Y1",'Rothmans Switch Indigo');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("Z1",'Dunhill Lights');
+		$spreadsheet->setActiveSheetIndex(0)->setCellValue("AA1",'Total Target Value (₦)');
+				
+				
+				
+
+		// Add some data
+		$x= 2;
+		foreach($subscribers as $sub){
+			$spreadsheet->setActiveSheetIndex(0);
+			$spreadsheet->setActiveSheetIndex(0)->setCellValue("A$x",$sub['area']);
+			$spreadsheet->setActiveSheetIndex(0)->setCellValue("B$x",$sub['GBNLURN']);
+			$spreadsheet->setActiveSheetIndex(0)->setCellValue("C$x",$sub['Name']);
+			$spreadsheet	->setActiveSheetIndex(0)->setCellValue("D$x",$sub['Band']);
+			$spreadsheet	->setActiveSheetIndex(0)->setCellValue("E$x",$sub['Total_Base_Target']);
+			$spreadsheet	->setActiveSheetIndex(0)->setCellValue("F$x",$sub['Benson_and_Hedges_Cool_Fusion']);
+			$spreadsheet	->setActiveSheetIndex(0)->setCellValue("G$x",$sub['BH_Tropical_Boost']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("H$x",$sub['BH_Switch']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("I$x",$sub['Rothmans_Switch']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("J$x",$sub['Benson_Hedges_Boost']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("K$x",$sub['Benson_Hedges_Demi-Slims']);
+					$spreadsheet->setActiveSheetIndex(0)->setCellValue("L$x",$sub['Pall_Mall_ExcelBlend']);
+					$spreadsheet->setActiveSheetIndex(0)->setCellValue("M$x",$sub['Benson_and_Hedges_Flavour']);
+					$spreadsheet->setActiveSheetIndex(0)->setCellValue("N$x",$sub['Dunhill_Switch']);
+					$spreadsheet->setActiveSheetIndex(0)->setCellValue("O$x",$sub['st_Moritz_by_dunhill']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("P$x",$sub['Rothmans_Menthol']);
+					$spreadsheet->setActiveSheetIndex(0)->setCellValue("QR$x",$sub['Rothmans_Menthol_Mix']);
+					$spreadsheet->setActiveSheetIndex(0)->setCellValue("R$x",$sub['Pall_Mall_Rubi']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("S$x",$sub['Pall_Mall_Boost']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("T$x",$sub['Pall_Mall_Filter']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("U$x",$sub['Pall_Mall_Menthol']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("V$x",$sub['Rothmans_Flavour']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("W$x",$sub['Royal_Std_Filter']);
+					$spreadsheet		->setActiveSheetIndex(0)->setCellValue("X$x",$sub['BH_Demi_Rubi']);
+					$spreadsheet		->setActiveSheetIndex(0)->setCellValue("Y$x",$sub['Rothmans_Switch_Indigo']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("Z$x",$sub['Dunhill_Lights']);
+					$spreadsheet	->setActiveSheetIndex(0)->setCellValue("AA$x",$sub['Total_Target_Value']);
+					
+			
+			$x++;
+		}
+
+
+
+// Rename worksheet
+		$spreadsheet->getActiveSheet()->setTitle('Users Information');
+
+// set right to left direction
+//		$spreadsheet->getActiveSheet()->setRightToLeft(true);
+
+// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+		$spreadsheet->setActiveSheetIndex(0);
+
+// Redirect output to a client’s web browser (Excel2007)
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		// header('Content-Disposition: attachment;filename=$filename');
+		header("Content-Disposition: attachment; filename=$filename");
+		header('Cache-Control: max-age=0');
+// If you're serving to IE 9, then the following may be needed
+		header('Cache-Control: max-age=1');
+
+// If you're serving to IE over SSL, then the following may be needed
+		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+		header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+		header('Pragma: public'); // HTTP/1.0
+
+		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Excel2007');
+		var_dump($writer );
+		$writer->save('php://output');
+		exit;
+
+		//  create new file and remove Compatibility mode from word title
+
+
+	}
+
 }

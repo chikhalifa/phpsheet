@@ -53,3 +53,5 @@ $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['home/import'] = 'Home/import';
+$route['home/export'] = 'Home/Export';
+
