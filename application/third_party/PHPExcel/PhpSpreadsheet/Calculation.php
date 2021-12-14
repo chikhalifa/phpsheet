@@ -42,7 +42,7 @@ if (!defined('CALCULATION_REGEXP_CELLREF')) {
 class Calculation
 {
     /** Constants                */
-/** Regular Expressions        */
+    /** Regular Expressions        */
     //    Numeric operand
     const CALCULATION_REGEXP_NUMBER = '[-+]?\d*\.?\d+(e[-+]?\d+)?';
     //    String operand
@@ -2140,7 +2140,8 @@ class Calculation
     {
         if (($returnType == self::RETURN_ARRAY_AS_VALUE) ||
             ($returnType == self::RETURN_ARRAY_AS_ERROR) ||
-            ($returnType == self::RETURN_ARRAY_AS_ARRAY)) {
+            ($returnType == self::RETURN_ARRAY_AS_ARRAY)
+        ) {
             self::$returnArrayAsType = $returnType;
 
             return true;
@@ -2317,7 +2318,7 @@ class Calculation
             }
 
             self::$functionReplaceFromExcel = self::$functionReplaceToExcel =
-            self::$functionReplaceFromLocale = self::$functionReplaceToLocale = null;
+                self::$functionReplaceFromLocale = self::$functionReplaceToLocale = null;
             self::$localeLanguage = $locale;
 
             return true;
@@ -2471,7 +2472,7 @@ class Calculation
             }
             //    Return strings wrapped in quotes
             return '"' . $value . '"';
-        //    Convert numeric errors to NaN error
+            //    Convert numeric errors to NaN error
         } elseif ((is_float($value)) && ((is_nan($value)) || (is_infinite($value)))) {
             return Calculation\Functions::NAN();
         }
@@ -2491,7 +2492,7 @@ class Calculation
             if ((isset($value[0])) && ($value[0] == '"') && (substr($value, -1) == '"')) {
                 return substr($value, 1, -1);
             }
-        //    Convert numeric errors to NAN error
+            //    Convert numeric errors to NAN error
         } elseif ((is_float($value)) && ((is_nan($value)) || (is_infinite($value)))) {
             return Calculation\Functions::NAN();
         }
@@ -2603,11 +2604,11 @@ class Calculation
         //    Basic validation that this is indeed a formula
         //    We return an empty array if not
         $formula = trim($formula);
-        if ((!isset($formula{0})) || ($formula{0} != '=')) {
+        if ((!isset($formula[0])) || ($formula[0] != '=')) {
             return [];
         }
         $formula = ltrim(substr($formula, 1));
-        if (!isset($formula{0})) {
+        if (!isset($formula[0])) {
             return [];
         }
 
@@ -2698,11 +2699,13 @@ class Calculation
         //    Basic validation that this is indeed a formula
         //    We simply return the cell value if not
         $formula = trim($formula);
-        if ($formula{0} != '=') {
+        if ($formula{
+        0} != '=') {
             return self::wrapResult($formula);
         }
         $formula = ltrim(substr($formula, 1));
-        if (!isset($formula{0})) {
+        if (!isset($formula{
+        0})) {
             return self::wrapResult($formula);
         }
 
@@ -2714,7 +2717,8 @@ class Calculation
             return $cellValue;
         }
 
-        if (($wsTitle{0} !== "\x00") && ($this->cyclicReferenceStack->onStack($wsCellReference))) {
+        if (($wsTitle{
+        0} !== "\x00") && ($this->cyclicReferenceStack->onStack($wsCellReference))) {
             if ($this->cyclicFormulaCount <= 0) {
                 $this->cyclicFormulaCell = '';
 
@@ -2968,7 +2972,8 @@ class Calculation
             } else {
                 if ($value == '') {
                     return 'an empty string';
-                } elseif ($value{0} == '#') {
+                } elseif ($value{
+                0} == '#') {
                     return 'a ' . $value . ' error';
                 } else {
                     $typeString = 'a string';
@@ -3078,28 +3083,31 @@ class Calculation
         $pCellParent = ($pCell !== null) ? $pCell->getWorksheet() : null;
 
         $regexpMatchString = '/^(' . self::CALCULATION_REGEXP_FUNCTION .
-                                '|' . self::CALCULATION_REGEXP_CELLREF .
-                                '|' . self::CALCULATION_REGEXP_NUMBER .
-                                '|' . self::CALCULATION_REGEXP_STRING .
-                                '|' . self::CALCULATION_REGEXP_OPENBRACE .
-                                '|' . self::CALCULATION_REGEXP_NAMEDRANGE .
-                                '|' . self::CALCULATION_REGEXP_ERROR .
-                                ')/si';
+            '|' . self::CALCULATION_REGEXP_CELLREF .
+            '|' . self::CALCULATION_REGEXP_NUMBER .
+            '|' . self::CALCULATION_REGEXP_STRING .
+            '|' . self::CALCULATION_REGEXP_OPENBRACE .
+            '|' . self::CALCULATION_REGEXP_NAMEDRANGE .
+            '|' . self::CALCULATION_REGEXP_ERROR .
+            ')/si';
 
         //    Start with initialisation
         $index = 0;
         $stack = new Calculation\Token\Stack();
         $output = [];
         $expectingOperator = false; //    We use this test in syntax-checking the expression to determine when a
-                                                    //        - is a negation or + is a positive operator rather than an operation
+        //        - is a negation or + is a positive operator rather than an operation
         $expectingOperand = false; //    We use this test in syntax-checking the expression to determine whether an operand
-                                                    //        should be null in a function call
+        //        should be null in a function call
         //    The guts of the lexical parser
         //    Loop through the formula extracting each operator and operand in turn
         while (true) {
-            $opCharacter = $formula{$index};    //    Get the first character of the value at the current index position
-            if ((isset(self::$comparisonOperators[$opCharacter])) && (strlen($formula) > $index) && (isset(self::$comparisonOperators[$formula{$index + 1}]))) {
-                $opCharacter .= $formula{++$index};
+            $opCharacter = $formula{
+            $index};    //    Get the first character of the value at the current index position
+            if ((isset(self::$comparisonOperators[$opCharacter])) && (strlen($formula) > $index) && (isset(self::$comparisonOperators[$formula{
+            $index + 1}]))) {
+                $opCharacter .= $formula{
+                ++$index};
             }
 
             //    Find out if we're currently at the beginning of a number, variable, cell reference, function, parenthesis or operand
@@ -3116,10 +3124,12 @@ class Calculation
             } elseif ((($opCharacter == '~') || ($opCharacter == '|')) && (!$isOperandOrFunction)) {    //    We have to explicitly deny a tilde or pipe, because they are legal
                 return $this->raiseFormulaError("Formula Error: Illegal character '~'"); //        on the stack but not in the input expression
             } elseif ((isset(self::$operators[$opCharacter]) or $isOperandOrFunction) && $expectingOperator) {    //    Are we putting an operator on the stack?
-                while ($stack->count() > 0 &&
+                while (
+                    $stack->count() > 0 &&
                     ($o2 = $stack->last()) &&
                     isset(self::$operators[$o2['value']]) &&
-                    @(self::$operatorAssociativity[$opCharacter] ? self::$operatorPrecedence[$opCharacter] < self::$operatorPrecedence[$o2['value']] : self::$operatorPrecedence[$opCharacter] <= self::$operatorPrecedence[$o2['value']])) {
+                    @(self::$operatorAssociativity[$opCharacter] ? self::$operatorPrecedence[$opCharacter] < self::$operatorPrecedence[$o2['value']] : self::$operatorPrecedence[$opCharacter] <= self::$operatorPrecedence[$o2['value']])
+                ) {
                     $output[] = $stack->pop(); //    Swap operands and higher precedence operators from the stack to the output
                 }
                 $stack->push('Binary Operator', $opCharacter); //    Finally put our current operator onto the stack
@@ -3283,13 +3293,15 @@ class Calculation
                             $rangeWS2 .= '!';
                         }
                         if ((is_integer($startRowColRef)) && (ctype_digit($val)) &&
-                            ($startRowColRef <= 1048576) && ($val <= 1048576)) {
+                            ($startRowColRef <= 1048576) && ($val <= 1048576)
+                        ) {
                             //    Row range
                             $endRowColRef = ($pCellParent !== null) ? $pCellParent->getHighestColumn() : 'XFD'; //    Max 16,384 columns for Excel2007
                             $output[count($output) - 1]['value'] = $rangeWS1 . 'A' . $startRowColRef;
                             $val = $rangeWS2 . $endRowColRef . $val;
                         } elseif ((ctype_alpha($startRowColRef)) && (ctype_alpha($val)) &&
-                            (strlen($startRowColRef) <= 3) && (strlen($val) <= 3)) {
+                            (strlen($startRowColRef) <= 3) && (strlen($val) <= 3)
+                        ) {
                             //    Column range
                             $endRowColRef = ($pCellParent !== null) ? $pCellParent->getHighestRow() : 1048576; //    Max 1,048,576 rows for Excel2007
                             $output[count($output) - 1]['value'] = $rangeWS1 . strtoupper($startRowColRef) . '1';
@@ -3305,7 +3317,7 @@ class Calculation
                         if ((strpos($val, '.') !== false) || (stripos($val, 'e') !== false) || ($val > PHP_INT_MAX) || ($val < -PHP_INT_MAX)) {
                             $val = (float) $val;
                         } else {
-                            $val = (integer) $val;
+                            $val = (int) $val;
                         }
                     } elseif (isset(self::$excelConstants[trim(strtoupper($val))])) {
                         $excelConstant = trim(strtoupper($val));
@@ -3346,21 +3358,28 @@ class Calculation
                 }
             }
             //    Ignore white space
-            while (($formula{$index} == "\n") || ($formula{$index} == "\r")) {
+            while (($formula{
+            $index} == "\n") || ($formula{
+            $index} == "\r")) {
                 ++$index;
             }
-            if ($formula{$index} == ' ') {
-                while ($formula{$index} == ' ') {
+            if ($formula{
+            $index} == ' ') {
+                while ($formula{
+                $index} == ' ') {
                     ++$index;
                 }
                 //    If we're expecting an operator, but only have a space between the previous and next operands (and both are
                 //        Cell References) then we have an INTERSECTION operator
                 if (($expectingOperator) && (preg_match('/^' . self::CALCULATION_REGEXP_CELLREF . '.*/Ui', substr($formula, $index), $match)) &&
-                    ($output[count($output) - 1]['type'] == 'Cell Reference')) {
-                    while ($stack->count() > 0 &&
+                    ($output[count($output) - 1]['type'] == 'Cell Reference')
+                ) {
+                    while (
+                        $stack->count() > 0 &&
                         ($o2 = $stack->last()) &&
                         isset(self::$operators[$o2['value']]) &&
-                        @(self::$operatorAssociativity[$opCharacter] ? self::$operatorPrecedence[$opCharacter] < self::$operatorPrecedence[$o2['value']] : self::$operatorPrecedence[$opCharacter] <= self::$operatorPrecedence[$o2['value']])) {
+                        @(self::$operatorAssociativity[$opCharacter] ? self::$operatorPrecedence[$opCharacter] < self::$operatorPrecedence[$o2['value']] : self::$operatorPrecedence[$opCharacter] <= self::$operatorPrecedence[$o2['value']])
+                    ) {
                         $output[] = $stack->pop(); //    Swap operands and higher precedence operators from the stack to the output
                     }
                     $stack->push('Binary Operator', '|'); //    Put an Intersect Operator on the stack
@@ -3437,7 +3456,7 @@ class Calculation
 
                 //    Process the operation in the appropriate manner
                 switch ($token) {
-                    //    Comparison (Boolean) Operators
+                        //    Comparison (Boolean) Operators
                     case '>':            //    Greater than
                     case '<':            //    Less than
                     case '>=':            //    Greater than or Equal to
@@ -3446,7 +3465,7 @@ class Calculation
                     case '<>':            //    Inequality
                         $this->executeBinaryComparisonOperation($cellID, $operand1, $operand2, $token, $stack);
                         break;
-                    //    Binary Operators
+                        //    Binary Operators
                     case ':':            //    Range
                         $sheet1 = $sheet2 = '';
                         if (strpos($operand1Data['reference'], '!') !== false) {
@@ -3557,7 +3576,7 @@ class Calculation
                         break;
                 }
 
-            // if the token is a unary operator, pop one value off the stack, do the operation, and push it back on
+                // if the token is a unary operator, pop one value off the stack, do the operation, and push it back on
             } elseif (($token === '~') || ($token === '%')) {
                 if (($arg = $stack->pop()) === null) {
                     return $this->raiseFormulaError('Internal error - Operand value missing from stack');
@@ -3656,7 +3675,7 @@ class Calculation
                 }
                 $stack->push('Value', $cellValue, $cellRef);
 
-            // if the token is a function, pop arguments off the stack, hand them to the function, and push the result back on
+                // if the token is a function, pop arguments off the stack, hand them to the function, and push the result back on
             } elseif (preg_match('/^' . self::CALCULATION_REGEXP_FUNCTION . '$/i', $token, $matches)) {
                 $functionName = $matches[1];
                 $argCount = $stack->pop();
@@ -3681,7 +3700,8 @@ class Calculation
                         $a = $argCount - $i - 1;
                         if (($passByReference) &&
                             (isset(self::$phpSpreadsheetFunctions[$functionName]['passByReference'][$a])) &&
-                            (self::$phpSpreadsheetFunctions[$functionName]['passByReference'][$a])) {
+                            (self::$phpSpreadsheetFunctions[$functionName]['passByReference'][$a])
+                        ) {
                             if ($arg['reference'] === null) {
                                 $args[] = $cellID;
                                 if ($functionName != 'MKMATRIX') {
@@ -3738,9 +3758,11 @@ class Calculation
                     $excelConstant = strtoupper($token);
                     $stack->push('Constant Value', self::$excelConstants[$excelConstant]);
                     $this->_debugLog->writeDebugLog('Evaluating Constant ', $excelConstant, ' as ', $this->showTypeDetails(self::$excelConstants[$excelConstant]));
-                } elseif ((is_numeric($token)) || ($token === null) || (is_bool($token)) || ($token == '') || ($token{0} == '"') || ($token{0} == '#')) {
+                } elseif ((is_numeric($token)) || ($token === null) || (is_bool($token)) || ($token == '') || ($token{
+                0} == '"') || ($token{
+                0} == '#')) {
                     $stack->push('Value', $token);
-                // if the token is a named range, push the named range name onto the stack
+                    // if the token is a named range, push the named range name onto the stack
                 } elseif (preg_match('/^' . self::CALCULATION_REGEXP_NAMEDRANGE . '$/i', $token, $matches)) {
                     $namedRange = $matches[6];
                     $this->_debugLog->writeDebugLog('Evaluating Named Range ', $namedRange);
@@ -3760,9 +3782,9 @@ class Calculation
         $output = $stack->pop();
         $output = $output['value'];
 
-//        if ((is_array($output)) && (self::$returnArrayAsType != self::RETURN_ARRAY_AS_ARRAY)) {
-//            return array_shift(Calculation\Functions::flattenArray($output));
-//        }
+        //        if ((is_array($output)) && (self::$returnArrayAsType != self::RETURN_ARRAY_AS_ARRAY)) {
+        //            return array_shift(Calculation\Functions::flattenArray($output));
+        //        }
         return $output;
     }
 
@@ -3779,13 +3801,15 @@ class Calculation
         if (is_string($operand)) {
             //    We only need special validations for the operand if it is a string
             //    Start by stripping off the quotation marks we use to identify true excel string values internally
-            if ($operand > '' && $operand{0} == '"') {
+            if ($operand > '' && $operand{
+            0} == '"') {
                 $operand = self::unwrapResult($operand);
             }
             //    If the string is a numeric value, we treat it as a numeric, so no further testing
             if (!is_numeric($operand)) {
                 //    If not a numeric, test to see if the value is an Excel error, and so can't be used in normal binary operations
-                if ($operand > '' && $operand{0} == '#') {
+                if ($operand > '' && $operand{
+                0} == '#') {
                     $stack->push('Value', $operand);
                     $this->_debugLog->writeDebugLog('Evaluation Result is ', $this->showTypeDetails($operand));
 
@@ -3843,10 +3867,12 @@ class Calculation
         }
 
         //    Simple validate the two operands if they are string values
-        if (is_string($operand1) && $operand1 > '' && $operand1{0} == '"') {
+        if (is_string($operand1) && $operand1 > '' && $operand1{
+        0} == '"') {
             $operand1 = self::unwrapResult($operand1);
         }
-        if (is_string($operand2) && $operand2 > '' && $operand2{0} == '"') {
+        if (is_string($operand2) && $operand2 > '' && $operand2{
+        0} == '"') {
             $operand2 = self::unwrapResult($operand2);
         }
 
@@ -3864,7 +3890,7 @@ class Calculation
 
         //    execute the necessary operation
         switch ($operation) {
-            //    Greater than
+                //    Greater than
             case '>':
                 if ($useLowercaseFirstComparison) {
                     $result = $this->strcmpLowercaseFirst($operand1, $operand2) > 0;
@@ -3872,7 +3898,7 @@ class Calculation
                     $result = ($operand1 > $operand2);
                 }
                 break;
-            //    Less than
+                //    Less than
             case '<':
                 if ($useLowercaseFirstComparison) {
                     $result = $this->strcmpLowercaseFirst($operand1, $operand2) < 0;
@@ -3880,7 +3906,7 @@ class Calculation
                     $result = ($operand1 < $operand2);
                 }
                 break;
-            //    Equality
+                //    Equality
             case '=':
                 if (is_numeric($operand1) && is_numeric($operand2)) {
                     $result = (abs($operand1 - $operand2) < $this->delta);
@@ -3888,7 +3914,7 @@ class Calculation
                     $result = strcmp($operand1, $operand2) == 0;
                 }
                 break;
-            //    Greater than or equal
+                //    Greater than or equal
             case '>=':
                 if (is_numeric($operand1) && is_numeric($operand2)) {
                     $result = ((abs($operand1 - $operand2) < $this->delta) || ($operand1 > $operand2));
@@ -3898,7 +3924,7 @@ class Calculation
                     $result = strcmp($operand1, $operand2) >= 0;
                 }
                 break;
-            //    Less than or equal
+                //    Less than or equal
             case '<=':
                 if (is_numeric($operand1) && is_numeric($operand2)) {
                     $result = ((abs($operand1 - $operand2) < $this->delta) || ($operand1 < $operand2));
@@ -3908,7 +3934,7 @@ class Calculation
                     $result = strcmp($operand1, $operand2) <= 0;
                 }
                 break;
-            //    Inequality
+                //    Inequality
             case '<>':
                 if (is_numeric($operand1) && is_numeric($operand2)) {
                     $result = (abs($operand1 - $operand2) > 1E-14);
@@ -3973,24 +3999,25 @@ class Calculation
         } else {
             if ((Calculation\Functions::getCompatibilityMode() != Calculation\Functions::COMPATIBILITY_OPENOFFICE) &&
                 ((is_string($operand1) && !is_numeric($operand1) && strlen($operand1) > 0) ||
-                 (is_string($operand2) && !is_numeric($operand2) && strlen($operand2) > 0))) {
+                    (is_string($operand2) && !is_numeric($operand2) && strlen($operand2) > 0))
+            ) {
                 $result = Calculation\Functions::VALUE();
             } else {
                 //    If we're dealing with non-matrix operations, execute the necessary operation
                 switch ($operation) {
-                    //    Addition
+                        //    Addition
                     case '+':
                         $result = $operand1 + $operand2;
                         break;
-                    //    Subtraction
+                        //    Subtraction
                     case '-':
                         $result = $operand1 - $operand2;
                         break;
-                    //    Multiplication
+                        //    Multiplication
                     case '*':
                         $result = $operand1 * $operand2;
                         break;
-                    //    Division
+                        //    Division
                     case '/':
                         if ($operand2 == 0) {
                             //    Trap for Divide by Zero error
@@ -4002,7 +4029,7 @@ class Calculation
                             $result = $operand1 / $operand2;
                         }
                         break;
-                    //    Power
+                        //    Power
                     case '^':
                         $result = pow($operand1, $operand2);
                         break;

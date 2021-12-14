@@ -2,14 +2,14 @@
 <html lang="en">
 
 <head>
- <title>Home Page</title>
- <meta charset="utf-8">
+    <title>Home Page</title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
-  </head>
+</head>
 <section class="content">
     <div class="card">
         <div class="card-header">
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="card-body">
-        
+
             <!-- <form id="form-upload-user" method="post" autocomplete="off" >
                 <div class="sub-result"></div>
                 <div class="form-group">
@@ -41,15 +41,19 @@
                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light" id="btnUpload">Upload</button>
                 </div>
             </form> -->
-            <?php echo form_open_multipart('home/import');?>
-	<?php echo "<input type='file' name='profile_pic' size='20' />"; ?>
-	<?php echo "<input type='submit' name='submit' value='upload' /> ";?>
-	<?php echo "</form>"?>
-            
-           
-        </div>
+            <?php echo form_open_multipart('home/import'); ?>
+            <?php echo "<input type='file' name='profile_pic' size='20' />"; ?>
+            <?php echo "<input type='submit' name='submit' value='upload' /> "; ?>
+            <?php echo "</form>" ?>
+
+
+        </div><br>
+        <p class="btn btn-danger">Please only download after uploading for testing purpose</p>
+        <a href="<?= base_url() ?>home/export" class="btn btn-success">Download .xls file</a>
+
     </div>
 </section>
+
 </html>
 
 <!-- /.content -->
@@ -66,14 +70,14 @@
                 dataType: 'json',
                 contentType: false,
                 cache: false,
-                processData:false,
+                processData: false,
                 beforeSend: function() {
                     $("#btnUpload").prop('disabled', true);
                     $(".user-loader").show();
-                }, 
+                },
                 success: function(result) {
                     $("#btnUpload").prop('disabled', false);
-                    if($.isEmptyObject(result.error_message)) {
+                    if ($.isEmptyObject(result.error_message)) {
                         $(".result").html(result.success_message);
                     } else {
                         $(".sub-result").html(result.error_message);
