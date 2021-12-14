@@ -406,6 +406,7 @@ for ($row = 8; $row <= $highestRow; ++$row) {
 		$request=($request_id === '')?$this->requestid:$request_id;
 		// $request_id =$this->request_id;
 		$subscribers = $this->User_model->get_records($request);
+		// var_dump($subscribers);
 		$sql="SELECT filename from attachmentDetail WHERE request_id = '$request'";       
         $filenamedatail = $this->User_model->run_qry($sql);
 		$array = json_decode(json_encode($filenamedatail), true);
@@ -546,6 +547,7 @@ for ($row = 8; $row <= $highestRow; ++$row) {
 
 // Redirect output to a client’s web browser (Excel2007)
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		// header("Content-Type: application/csv; ");
 		// header('Content-Disposition: attachment;filename=$filename');
 		header("Content-Disposition: attachment; filename=$filename");
 		header('Cache-Control: max-age=0');
@@ -553,13 +555,13 @@ for ($row = 8; $row <= $highestRow; ++$row) {
 		header('Cache-Control: max-age=1');
 
 // If you're serving to IE over SSL, then the following may be needed
-		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-		header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-		header('Pragma: public'); // HTTP/1.0
+		// header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+		// header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+		// header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+		// header('Pragma: public'); // HTTP/1.0
 
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Excel2007');
-		var_dump($writer );
+		// var_dump($writer );
 		$writer->save('php://output');
 		exit;
 
