@@ -88,5 +88,9 @@ class User_model extends CI_Model {
         $query = $this->db->get_where('regional_target_volume', array('request_id' => $request_id), $this->limit, $this->offset);
         return $query->result_array();
     }
+	function get_records_for_all($region) {
+        $query = $this->db->get_where('region_credit_request', array('region' => $region), $this->limit, $this->offset);
+        return $query->result_array();
+    }
 
 }

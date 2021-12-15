@@ -48,6 +48,9 @@
 
 
         </div><br>
+       
+        <p class="btn btn-info">C</p>
+        <a href="<?= base_url() ?>home/exact" class="btn btn-warning">Create Batch</a>
         <p class="btn btn-danger">Please only download after uploading for testing purpose</p>
         <a href="<?= base_url() ?>home/export" class="btn btn-success">Download .xls file</a>
 

@@ -200,71 +200,7 @@ class Home extends CI_Controller
 			// echo '<pre>';
 			// print_r($worksheet);
 			// die("here");
-			$worksheetCount = count($worksheet);
-			if ($worksheetCount > 1) {
-				for ($row = 9; $row <= $worksheetCount; $row++) {
-					$name = $worksheet[$row]['C'];
-					$additional_data = array(
-						// 'area'    => ($worksheet->getCell($worksheet[$row]['B'])->isFormula())?$worksheet->getCell($worksheet[$row]['B'])->getOldCalculatedValue():$worksheet->getCell($worksheet[$row]['B'])->getValue(),
-						'GBNLURN'     => $worksheet[$row]['C'],
-
-						'BATURN'   => $worksheet[$row]['D'],
-						'Name'          => $worksheet[$row]['D'],
-						'Band'       => $worksheet[$row]['G'],
-						// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getOldCalculatedValue(),
-						'cust_name'     => $worksheet[$row]['C'],
-						'cust_code'     => $worksheet[$row]['C']
-
-					);
-					print_r($additional_data);
-				}
-				die("here");
-			}
-			// 
-			$highestRow = $worksheet->getHighestRow(); // e.g. 10
-			$highestColumn = $worksheet->getHighestColumn(); // e.g 'F'
-			// 	$rowData = $worksheet->rangeToArray('A2:' . $highestColumn . $highestRow,
-			//  NULL, TRUE, FALSE);
-
-
-			// // Increment the highest column letter
-			// $highestColumn++;
-			// echo '<table>' . "\n";
-			// for ($row = 1; $row <= $highestRow; ++$row) {
-			// 	echo '<tr>' . PHP_EOL;
-			// 	for ($col = 'A'; $col != $highestColumn; ++$col) {
-			// 		echo '<td>' .
-			// 			$worksheet->getCell($col . $row)
-			// 			->getCalculatedValue()  .
-
-			// 			'</td>' . PHP_EOL;
-			// 	}
-			// 	echo '</tr>' . PHP_EOL;
-			// }
-			// echo '</table>' . PHP_EOL;
-			// Get the highest row and column numbers referenced in the worksheet
-			$highestRow = $worksheet->getHighestRow(); // e.g. 10
-			$highestColumn = $worksheet->getHighestColumn(); // e.g 'F'
-			$highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn); // e.g. 5
-			$rowsData = [];
-			echo '<table>' . "\n";
-			for ($row = 8; $row <= $highestRow; ++$row) {
-				echo '<tr>' . PHP_EOL;
-				for ($col = 2; $col <= $highestColumnIndex; ++$col) {
-					if ($worksheet->getCellByColumnAndRow($col, $row)->isFormula()) {
-						$value = $worksheet->getCellByColumnAndRow($col, $row)->getOldCalculatedValue();
-					} else {
-						$value = $worksheet->getCellByColumnAndRow($col, $row)->getValue();
-					}
-					// $value = $worksheet->getCellByColumnAndRow($col, $row)->getFormattedValue();
-					// echo '<td>' . $value . '</td>' . PHP_EOL;
-					$rowsData = $value;
-					var_dump($rowsData);
-				}
-				// echo '</tr>' . PHP_EOL;
-
-
-			}
+			
 		}
 	}
 
@@ -534,7 +470,7 @@ class Home extends CI_Controller
 
 
 		// Rename worksheet
-		$spreadsheet->getActiveSheet()->setTitle('Users Information');
+		$spreadsheet->getActiveSheet()->setTitle('TARGET VOLUME (IN CASE)');
 
 		// set right to left direction
 		//		$spreadsheet->getActiveSheet()->setRightToLeft(true);
@@ -548,8 +484,8 @@ class Home extends CI_Controller
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		// header("Content-Type: application/csv; ");
 		// header('Content-Disposition: attachment;filename=$filename');
-		// header('Content-Disposition: attachment;filename="subscribers_sheet.xlsx"');
-		header("Content-Disposition: attachment; filename=$filename");
+		header('Content-Disposition: attachment;filename="TARGET VOLUME.xlsx"');
+		// header("Content-Disposition: attachment; filename=$filename");
 		header('Cache-Control: max-age=0');
 		// If you're serving to IE 9, then the following may be needed
 		// header('Cache-Control: max-age=1');
@@ -573,5 +509,173 @@ class Home extends CI_Controller
 		//  create new file and remove Compatibility mode from word title
 
 
+	}
+	public function ExactBatch(){
+		$this->load->model('User_model');
+		$regions = array( "North","Middle Belt","South East","South West");
+		$destination = realpath('./uploads/attachments');
+		$path       = 'uploads/';
+		$cust_type ="";
+         foreach( $regions as $region ) {
+            echo "Value is $region <br />";
+			$RegionDetail = $this->User_model->get_records_for_all($region);
+			
+			// $filenamedatail	=$path .$detail['filename'];
+		// 	$filenamedatail = array(
+		// 		// 'area'    => ($worksheet->getCell($worksheet[$row]['B'])->isFormula())?$worksheet->getCell($worksheet[$row]['B'])->getOldCalculatedValue():$worksheet->getCell($worksheet[$row]['B'])->getValue(),
+		// 		'filename'     => $path. $detail['filename'],
+		// 	);
+			
+		// 	$real=json_decode(json_encode($detail['filename']), true);
+		// 	// print_r($real);
+		// 	$array = json_decode(json_encode($filenamedatail), true);
+		// $filename = $array["filename"];
+		// var_dump($array);
+		foreach($RegionDetail as $item){
+			$regionValue=isset($item['filename']) ? $path .$item['filename']: null;
+			echo "regionValue is $regionValue <br />";
+			if( file_exists($regionValue)){
+				$arr_file   = explode('.', $regionValue);
+				$extension  = end($arr_file);
+				echo	"extension is $extension <br />";	
+				if ('csv' == $extension) {
+					$reader     = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+				} else {
+					$reader     = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+				}
+				$reader->setReadDataOnly(false);
+				$spreadsheet    = $reader->load($regionValue);
+				$worksheet   = $spreadsheet->getActiveSheet();
+				$rows = [];
+			foreach ($worksheet->getRowIterator() as $row) {
+				$cellIterator = $row->getCellIterator();
+				$cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+				$cells = [];
+				foreach ($cellIterator as $cell) {
+					// $cells[] = $cell->getValue();
+					$cells[] = ($cell->isFormula()) ? $cell->getOldCalculatedValue() : $cell->getValue();
+				}
+				$rows[] = $cells;
+			}
+			// var_dump($rows);
+			// die("here1");
+			$rowsCount = count($rows);
+			if ($rowsCount > 1) {
+				for ($row = 9; $row <= $rowsCount; $row++) {
+					$name = "no value";
+					$regional_target_volume = array(
+						// 'area'    => ($worksheet->getCell($worksheet[$row]['B'])->isFormula())?$worksheet->getCell($worksheet[$row]['B'])->getOldCalculatedValue():$worksheet->getCell($worksheet[$row]['B'])->getValue(),
+						'area'     => isset($rows[$row][1]) ? $rows[$row][1] : null,
+						'GBNLURN'     => isset($rows[$row][2]) ? $rows[$row][2] : null,
+
+						'Name'          => isset($rows[$row][4]) ? $rows[$row][4] : null,
+						'Band'       => isset($rows[$row][5]) ? $rows[$row][5] : null,
+						'Total_Base_Target'       => isset($rows[$row][6]) ? $rows[$row][6] : null,
+						'Benson_and_Hedges_Cool_Fusion'       => isset($rows[$row][7]) ? $rows[$row][7] : null,
+						'BH_Tropical_Boost'       => isset($rows[$row][8]) ? $rows[$row][8] : null,
+						'BH_Switch'       => isset($rows[$row][9]) ? $rows[$row][9] : null,
+						'Benson_Hedges_Boost'       => isset($rows[$row][10]) ? $rows[$row][10] : null,
+						'Benson_Hedges_Demi-Slims'       => isset($rows[$row][11]) ? $rows[$row][11] : null,
+						'Pall_Mall_ExcelBlend'       => isset($rows[$row][12]) ? $rows[$row][12] : null,
+						'Benson_and_Hedges_Flavour'       => isset($rows[$row][13]) ? $rows[$row][13] : null,
+						'Dunhill_Switch'       => isset($rows[$row][14]) ? $rows[$row][14] : null,
+						'st_Moritz_by_dunhill'       => isset($rows[$row][15]) ? $rows[$row][15] : null,
+						'Rothmans_Menthol'       => isset($rows[$row][16]) ? $rows[$row][16] : null,
+						'Rothmans_Menthol_Mix'       => isset($rows[$row][17]) ? $rows[$row][17] : null,
+						'Pall_Mall_Rubi'       => isset($rows[$row][18]) ? $rows[$row][18] : null,
+						'Pall_Mall_Boost'       => isset($rows[$row][19]) ? $rows[$row][19] : null,
+						'Pall_Mall_Filter'       => isset($rows[$row][20]) ? $rows[$row][20] : null,
+						'Pall_Mall_Menthol'       => isset($rows[$row][21]) ? $rows[$row][21] : null,
+						'Rothmans_Flavour'       => isset($rows[$row][22]) ? $rows[$row][22] : null,
+						'Royal_Std_Filter'       => isset($rows[$row][23]) ? $rows[$row][23] : null,
+						'BH_Demi_Rubi'       => isset($rows[$row][24]) ? $rows[$row][24] : null,
+						'Rothmans_Switch_Indigo'       => isset($rows[$row][25]) ? $rows[$row][25] : null,
+						'Dunhill_Lights'       => isset($rows[$row][26]) ? $rows[$row][26] : null,
+						'Total_Target_Value'       => isset($rows[$row][28]) ? $rows[$row][28] : null,
+						'date_updated'            => $this->datetime,
+						'request_id'            => $this->requestid,
+
+
+						// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getOldCalculatedValue(),
+
+
+					);
+					// second table
+					$regional_credit_volume = array(
+						// 'area'    => ($worksheet->getCell($worksheet[$row]['B'])->isFormula())?$worksheet->getCell($worksheet[$row]['B'])->getOldCalculatedValue():$worksheet->getCell($worksheet[$row]['B'])->getValue(),
+						'area'     => isset($rows[$row][1]) ? $rows[$row][1] : null,
+						'GBNLURN'     => isset($rows[$row][2]) ? $rows[$row][2] : null,
+
+						'Name'          => isset($rows[$row][4]) ? $rows[$row][4] : null,
+						'Band'       => isset($rows[$row][5]) ? $rows[$row][5] : null,
+						'Total_Base_Target'       => isset($rows[$row][6]) ? $rows[$row][6] : null,
+						'Total_Credit_Volume'       => isset($rows[$row][30]) ? $rows[$row][30] : null,
+						'Dunhill_Lights'       => isset($rows[$row][31]) ? $rows[$row][31] : null,
+						// 'BH_Switch'       => isset($rows[$row][9]) ? $rows[$row][9]: null,
+						'st_Moritz_by_dunhill'       => isset($rows[$row][32]) ? $rows[$row][32] : null,
+						'Benson_and_Hedges_Flavour'       => isset($rows[$row][33]) ? $rows[$row][33] : null,
+						'B_and_H_Switch'       => isset($rows[$row][34]) ? $rows[$row][34] : null,
+						'Benson_Hedges_Demi-Slims'       => isset($rows[$row][35]) ? $rows[$row][35] : null,
+						'Benson_Hedges_Boost'       => isset($rows[$row][36]) ? $rows[$row][36] : null,
+						'Rothmans_Flavour'       => isset($rows[$row][37]) ? $rows[$row][37] : null,
+						'Rothmans_Switch'       => isset($rows[$row][38]) ? $rows[$row][38] : null,
+						'BH_Demi_Rubi'       => isset($rows[$row][39]) ? $rows[$row][39] : null,
+						'Rothmans_Menthol'       => isset($rows[$row][40]) ? $rows[$row][40] : null,
+						'Pall_Mall_Filter'       => isset($rows[$row][41]) ? $rows[$row][41] : null,
+						'Benson_and_Hedges_Cool_Fusion'       => isset($rows[$row][42]) ? $rows[$row][42] : null,
+						'BH_Tropical_Boost'       => isset($rows[$row][43]) ? $rows[$row][43] : null,
+						'Rothmans_Menthol_Mix'       => isset($rows[$row][44]) ? $rows[$row][44] : null,
+						'Pall_Mall_Menthol'       => isset($rows[$row][45]) ? $rows[$row][45] : null,
+						'Total_Target_Value'       => isset($rows[$row][46]) ? $rows[$row][46] : null,
+						'Maximum_Credit_Allocation'       => isset($rows[$row][47]) ? $rows[$row][47] : null,
+						'Comments'       => isset($rows[$row][48]) ? $rows[$row][48] : null,
+						'Customer_Credit_Rating'       => isset($rows[$row][49]) ? $rows[$row][49] : null,
+						'date_updated'            => $this->datetime,
+						'request_id'            => $this->requestid,
+
+
+
+						// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getOldCalculatedValue(),
+
+
+					);
+					// var_dump($regional_credit_volume);
+					if (file_exists($regionValue))
+						// unlink($regionValue);
+					if (count($regional_target_volume) > 0 && count($regional_credit_volume) > 0) {
+
+						$this->load->model('User_model');
+
+						$result = $this->User_model->add2($regional_target_volume);
+						$result2 = $this->User_model->add($regional_credit_volume);
+						// $result     = $this->user->add_batch2($regional_target_volume);
+						if ($result && $result2) {
+							$json = [
+								// 'success_message'    => showSuccessMessage("All Entries are imported successfully."),
+							];
+							// echo '<script>alert("You Have Successfully updated this Record!");</script>';
+							echo "yes";
+						} else {
+							$json = [
+								// 'error_message'  => showErrorMessage("Something went wrong. Please try again.")
+							];
+						}
+					}
+				}
+
+				// die("here");
+			}
+			// die("here");
+			}
+			
+		
+		}
+		
+
+			
+         }
+		
+		
+		
 	}
 }
