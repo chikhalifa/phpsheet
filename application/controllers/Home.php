@@ -842,7 +842,7 @@ class Home extends CI_Controller
 							'Dunhill_Lights'       => isset($rows[$row][26]) ? $rows[$row][26] : null,
 							'Total_Target_Value'       => isset($rows[$row][28]) ? $rows[$row][28] : null,
 							'date_updated'            => $this->datetime,
-							'request_id'            => $this->requestid,
+							'request_id'            => $request,
 
 
 							// 'Rothmans_Switch'     => $worksheet->getCell( $worksheet[$row]['F'])->getOldCalculatedValue(),
@@ -880,7 +880,7 @@ class Home extends CI_Controller
 							'Comments'       => isset($rows[$row][48]) ? $rows[$row][48] : null,
 							'Customer_Credit_Rating'       => isset($rows[$row][49]) ? $rows[$row][49] : null,
 							'date_updated'            => $this->datetime,
-							'request_id'            => $this->requestid,
+							'request_id'            => $request,
 
 
 
