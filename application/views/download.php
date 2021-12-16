@@ -50,7 +50,7 @@
 
 
         </div><br>
-
+        <a href="<?= base_url() ?>" class="btn btn-warning">Create New Batch</a>
 
 
     </div>
