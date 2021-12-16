@@ -41,17 +41,19 @@
                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light" id="btnUpload">Upload</button>
                 </div>
             </form> -->
-            <?php echo form_open_multipart('home/exact'); ?>
-
-            <?php echo "<input type='text' name='ref_id'/>"; ?>
-            <?php echo "<input type='submit' name='submit'class='btn btn-warning' value='Create Batch' /> "; ?>
-
+            <?php echo form_open_multipart('home/import'); ?>
+            <!-- <?php echo "<input type='file' name='profile_pic' size='20' />"; ?> -->
+            <?php echo "input type='text' name='txt_uname'"; ?>
+            <?php echo "<input type='submit' name='submit' value='Create Batch' /> "; ?>
             <?php echo "</form>" ?>
 
 
         </div><br>
 
-
+        <p class="btn btn-info">C</p>
+        <a href="<?= base_url() ?>home/exact" class="btn btn-warning">Create Batch</a>
+        <p class="btn btn-danger">Please only download after uploading for testing purpose</p>
+        <a href="<?= base_url() ?>home/export" class="btn btn-success">Download .xls file</a>
 
     </div>
 </section>

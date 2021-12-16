@@ -13,7 +13,7 @@
 <section class="content">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Upload</h3>
+            <h3 class="card-title">Download Batch</h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"> <i class="fas fa-minus"></i>
                 </button>
@@ -41,10 +41,10 @@
                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light" id="btnUpload">Upload</button>
                 </div>
             </form> -->
-            <?php echo form_open_multipart('home/exact'); ?>
+            <?php echo form_open_multipart('home/export'); ?>
 
             <?php echo "<input type='text' name='ref_id'/>"; ?>
-            <?php echo "<input type='submit' name='submit'class='btn btn-warning' value='Create Batch' /> "; ?>
+            <?php echo "<input type='submit' name='submit'class='btn btn-success' value='Download Batch' /> "; ?>
 
             <?php echo "</form>" ?>
 

@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -53,6 +53,6 @@ $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['home/import'] = 'Home/import';
+$route['home/downloadpage'] = 'Home/download';
 $route['home/export'] = 'Home/Export';
 $route['home/exact'] = 'Home/ExactBatch';
-
